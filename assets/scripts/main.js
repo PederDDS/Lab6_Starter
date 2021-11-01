@@ -22,10 +22,6 @@ async function init() {
   
   
   let fetchSuccessful = await fetchRecipes();
-
-  console.log('Hei')
-  
-
   
   // if they didn't successfully load, quit the function
   if (!fetchSuccessful) {
@@ -54,21 +50,17 @@ async function fetchRecipes() {
 
     for(let i = 0;i<recipes.length; i++){
       fetch(recipes[i])
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error("HTTP error, status = " + response.status);
-        }
+      .catch(err => {console.log(err); reject(false)})
+      .then(response => response.json())
+      .then(data => {recipeData[i] = data;
+        console.log(data)})
+      .then(() => {
+        if (Object.keys(recipeData).length == recipes.length) {
+          resolve(true)}
       })
-      .then(data => recipeData[i] = data)
-
-      .catch(error=> console.log('This is from Catch'+error))
-      }
-    
-
-
-
-
-  });
+      
+    }
+  })
 }
 
 function createRecipeCards() {
@@ -79,17 +71,15 @@ function createRecipeCards() {
   // show any others you've added when the user clicks on the "Show more" button.
 
   // Part 1 Expose - TODO
-  const mainAdd = document.querySelector('main')
-  console.log('Hello')
+  const mainAdd = document.querySelector('main');
 
   for(let i = 0; i<recipes.length;i++){
 
 
-    var rec = createElement('recipe-card')
-    console.log('Hello')
-
-    rec.data = recipeData[i]
-    mainAdd.append(rec)
+    let element = document.createElement('recipe-card');
+    
+    element.data = recipeData[i];
+    mainAdd.append(element);
     
   }
   
@@ -105,4 +95,8 @@ function bindShowMore() {
   // in the recipeData object where you stored them/
 
   // Part 2 Explore - TODO
+  
+
+
+
 }

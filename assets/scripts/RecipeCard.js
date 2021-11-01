@@ -91,30 +91,63 @@ class RecipeCard extends HTMLElement {
     // Here's the root element that you'll want to attach all of your other elements to
     const card = document.createElement('article');
     
-    const para1 = document.createElement('p')
+    const para1 = document.createElement('p');
     para1.setAttribute("class", searchForKey(data,'headline' ));
     
-    const img = document.createElement('img')
+    const img = document.createElement('img');
     img.setAttribute("src", searchForKey(data,'thumbnailUrl' ));
     img.setAttribute("alt", searchForKey(data,'headline' ));
     
-    const a = document.createElement('a')
+    const a = document.createElement('a');
     a.setAttribute("href", getUrl(data));
+    a.innerHTML = searchForKey(data, 'headline')
 
-    const para2 = document.createElement('p')
-    para2.setAttribute('class','organization')
+    const para2 = document.createElement('p');
+    para2.setAttribute('class','organization');
+    para2.innerHTML = getOrganization(data);
 
-    const div = document.createElement('div')
+    const div = document.createElement('div');
+    let   value = searchForKey(data, "ratingValue");
+    div.className = "rating";
+    if(value != null){
+      const span = document.createElement('span');
+      span.innerHTML = value
+      div.appendChild(span);
+
+      const round = Math.round(value);
+      const img2 = document.createElement('img');
+      img2.src = `assets/images/icons/${round}-star.svg`;
+      img2.alt = `${round} stars`;
+      div.appendChild(img2);
+
+      const span2 = document.createElement('span');
+      span2.innerHTML = searchForKey(data, 'ratingCount');
+      div.appendChild(span);
+    }
+    else{
+      const span2 = document.createElement('span');
+      span2.innerHTML = 'No reviews';
+      div.appendChild(span2);
+    }
+
+    const time = document.createElement('time');
+    time.innerHTML = convertTime(searchForKey(data, 'totalTime'));
     
+    const ingr = document.createElement('p');
+    ingr.className = 'ingredients';
+    ingr.innerHTML = createIngredientList(searchForKey(data, 'recipeIngredient'));
 
+   
+    card.appendChild(img);
+    card.appendChild(para1);
+    card.appendChild(para2);
+    para1.appendChild(a);
+    card.appendChild(div);
+    card.appendChild(time)
+    card.appendChild(ingr)
 
-
-    
-    card.appendChild(img)
-    card.appendChild(para1)
-    para1.appendChild(a)
-
-    this.shadowRoot.appendChild(card)
+    this.shadowRoot.appendChild(styleElem); 
+    this.shadowRoot.appendChild(card);
 
     // Some functions that will be helpful here:
     //    document.createElement()
@@ -258,4 +291,5 @@ function createIngredientList(ingredientArr) {
 
 // Define the Class so you can use it as a custom element.
 // This is critical, leave this here and don't touch it
+
 customElements.define('recipe-card', RecipeCard);
